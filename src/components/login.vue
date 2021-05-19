@@ -70,7 +70,7 @@
                             username,
                             password
                         } = this.FormData
-                        this.$request.post("http://10.3.136.227:7760/api/user/login", {
+                        this.$request.post("/user/login", {
                             username,
                             password
                         }).then(({
