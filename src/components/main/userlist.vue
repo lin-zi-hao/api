@@ -23,12 +23,41 @@
                     </el-switch>
                 </template>
             </el-table-column>
-            <el-table-column property="operation" label="操作" width="190">
+            <el-table-column property="operation" label="操作" width="200">
                 <template v-slot:default="{row}">
-                    <el-button size="mini" type="primary"><i class="el-icon-edit"></i></el-button>
-                    <el-button size="mini" type="warning"><i class="el-icon-setting"></i></el-button>
-                    <el-button size="mini" type="danger" @click="deleted(row._id)"><i class="el-icon-delete"></i>
-                    </el-button>
+                    <el-tooltip class="item" effect="dark" content="编辑用户" placement="top">
+                        <el-button size="mini" type="primary"><i class="el-icon-edit"></i></el-button>
+                    </el-tooltip>
+
+                    <el-tooltip class="item" effect="dark" content="更改用户权限" placement="top">
+                        <el-button size="mini" type="warning" @click="dialogTableVisible=row._id" style="margin-right:10px"><i
+                                class="el-icon-setting"></i></el-button>
+                    </el-tooltip>
+                    <el-dialog title="分配角色" :visible="dialogTableVisible==row._id">
+                        <el-form :model="form">
+                            <el-form-item label="当前的用户" :label-width="formLabelWidth">
+                               <span>梓昊</span>
+                            </el-form-item>
+                            <el-form-item label="当前的角色" :label-width="formLabelWidth">
+                               <span>猪王</span>
+                            </el-form-item>
+                            <el-form-item label="活动区域" :label-width="formLabelWidth">
+                                <el-select v-model="form.region" placeholder="请选择活动区域">
+                                    <el-option label="主管" value="shanghai"></el-option>
+                                    <el-option label="测试角色" value="beijing"></el-option>
+                                </el-select>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dialogTableVisible = false">取 消</el-button>
+                            <el-button type="primary">确 定</el-button>
+                        </div>
+                    </el-dialog>
+
+                    <el-tooltip class="item" effect="dark" content="删除用户" placement="top">
+                        <el-button size="mini" type="danger" @click="open(row._id)"><i class="el-icon-delete"></i>
+                        </el-button>
+                    </el-tooltip>
                 </template>
             </el-table-column>
         </el-table>
@@ -62,6 +91,8 @@
 </template>
 <script>
     export default {
+        inject: ["reload"],
+
         data() {
             let checkPhone = (rule, value, callback) => {
                 if (!value) {
@@ -140,6 +171,7 @@
                         trigger: 'blur'
                     }]
                 },
+
             }
         },
         computed: {
@@ -168,6 +200,7 @@
                                     type: "success"
                                 })
                             }
+                            this.reload()
                         })
                     } else {
                         console.log('error submit!!');
@@ -175,22 +208,35 @@
                     }
                 });
             },
-            deleted(id) {
-                this.$request.delete("/user/remove", {
-                    params: {
-                        id,
-                    }
-                }).then(({
-                    data
-                }) => {
-                    if (data.code === 200) {
-                        this.$message({
-                            message: "删除成功",
-                            type: "success"
-                        })
-                    }
-                })
-            },
+
+            open(id) {
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$request.delete("/user/remove", {
+                        params: {
+                            id,
+                        }
+                    }).then(({
+                        data
+                    }) => {
+                        if (data.code === 200) {
+                            this.$message({
+                                message: "删除成功",
+                                type: "success"
+                            })
+                            this.reload()
+                        }
+                    })
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+            }
         },
         created() {
             this.$request.get("/user/all").then(({
