@@ -34,7 +34,7 @@
         </el-table>
         <div class="block">
             <el-pagination :page-sizes="[4, 6, 8, 10]" :page-size="30" style="padding:20px"
-                layout="total, sizes, prev, pager, next, jumper" :total="30">
+                layout="total, sizes, prev, pager, next, jumper" :total="getData">
             </el-pagination>
         </div>
 
@@ -142,7 +142,11 @@
                 },
             }
         },
-
+        computed: {
+            getData() {
+                return this.tableData.length
+            }
+        },
         methods: {
             changeswitch() {
                 this.$message({
