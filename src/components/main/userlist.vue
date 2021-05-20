@@ -28,7 +28,7 @@
                 <template v-slot:default="{row}">
                     <el-button size="mini" type="primary"><i class="el-icon-edit"></i></el-button>
                     <el-button size="mini" type="warning"><i class="el-icon-setting"></i></el-button>
-                    <el-button size="mini" type="danger" @click="deleted(row._id)"><i class="el-icon-delete"></i>
+                    <el-button size="mini" type="danger" @click="open(row._id)"><i class="el-icon-delete"></i>
                     </el-button>
                 </template>
             </el-table-column>
@@ -220,14 +220,19 @@
                     }
                 });
             },
-            deleted(id) {
-                this.$request.delete("/user/remove", {
+            open(id) {
+                this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+                }).then(() => {
+                    this.$request.delete("/user/remove", {
                     params: {
                         id,
                     }
-                }).then(({
-                    data
-                }) => {
+                    }).then(({
+                        data
+                    }) => {
                     if (data.code === 200) {
                         this.$message({
                             message: "删除成功",
@@ -236,6 +241,12 @@
                     }
                     this.reload();
                 })
+                }).catch(() => {
+                this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });          
+                });
             },
             //当每页发生变化时就会触发该函数
             changePage(size){
