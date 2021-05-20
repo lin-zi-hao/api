@@ -58,7 +58,11 @@
                 size:4
             }
         },
-
+        // y表示页码  l表示数据的数量
+        // skip 0*5=0
+        // l:5
+        //skip:1*5=5 l:5
+        //skip:2*5=10 l:5
         methods: {
             getdata(i,size){
                 this.$request.get("/goods/all",{
