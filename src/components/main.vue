@@ -7,7 +7,7 @@
             </div>
             <el-menu router default-active="1-4-1" class="el-menu-vertical-demo" background-color="#304156"
                 text-color="#fff" active-text-color="#ffd04b" style="border:none" v-for="item in sidebar"
-                :key="item.text">
+                :key="item.text" :collapse="isCollapse">
                 <el-submenu index="1">
                     <template slot="title">
                         <i :class="item.icon"></i>
@@ -23,7 +23,7 @@
         <el-container>
             <el-header style="display:flex; align-items:center;justify-content: space-between;">
                 <div style="display:flex; align-items:center; justify-content:start;">
-                    <i class="el-icon-s-unfold" style="margin-right:20px"></i>
+                     <i class="el-icon-s-unfold" style="margin-right:20px" ></i>
                     <el-breadcrumb separator-class="el-icon-arrow-right" style="line-height:60px">
                         <el-breadcrumb-item :to="{ path: '/main/welcome' }">首页</el-breadcrumb-item>
                         <el-breadcrumb-item>活动管理</el-breadcrumb-item>
@@ -104,14 +104,16 @@
                     }
                 ],
                 baseUrl: "/main",
-                isCollapse: true
+                isCollapse: false
             }
         },
         methods: {
             signOut() {
-
                 this.$router.push("/login");
 
+            },
+            isshow(){
+                this.isCollapse=!this.isCollapse;
             }
         },
     }
@@ -154,4 +156,6 @@
         color: #fff;
         line-height: 60px;
     }
+
+    
 </style>

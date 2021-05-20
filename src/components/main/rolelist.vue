@@ -42,11 +42,10 @@
             prop=""
             label="操作">
             <template #default="{row}">
-                <!-- <p>{{row._id}}</p> -->
                 <el-tooltip content="编辑" placement="top" style="margin-right:10px">
-                     <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogTableVisible = true">编辑</el-button> 
+                     <el-button type="primary" icon="el-icon-edit" size="mini" @click="dialogTableVisible = row._id">编辑</el-button> 
                 </el-tooltip>
-                    <el-dialog title="添加角色" :visible.sync="dialogTableVisible">
+                    <el-dialog title="添加角色" :visible="dialogTableVisible==row._id">
                         <el-form :rules="rules" ref="Roles1" :model="form">
                             <el-form-item label="角色名称" :label-width="formLabelWidth" prop="role">
                             <el-input  autocomplete="off" v-model="form.role" ></el-input>
@@ -69,6 +68,7 @@
              </template>
             </el-table-column>
         </el-table>
+        
     </div>
 </template>
 <script>
@@ -76,7 +76,7 @@
         inject:["reload"],
         data(){
             return{
-               totalRole:[],
+            //    totalRole:[],
                dialogTableVisible: false,
                dialogFormVisible: false,
                formLabelWidth:"120px",
@@ -84,10 +84,6 @@
                    role:"",
                    roleDes:""
                },
-            //    form1:{
-            //        role:"",
-            //        roleDes:""
-            //    },
                rules:{
                 role:[{
                         required: true, message: '请输入角色名称'
@@ -97,9 +93,9 @@
         },
         components:{ 
         },
-        watch:{
-            del:function(n,o){
-                console.log(1);
+        computed:{
+            totalRole(){
+                return this.$store.state.role.role
             }
         },
         methods:{
@@ -133,13 +129,14 @@
                         message: '已取消删除'
                     });          
                     });
+                    console.log(this.totalRole1);
            },
-           getDate(){
-                this.$request.get("/update/all").then(({data:{data:totalRole}})=>{
-                console.log(totalRole);
-                this.totalRole = totalRole;
-            })
-           },
+        //    getDate(){
+        //         this.$request.get("/update/all").then(({data:{data:totalRole}})=>{
+        //         console.log(totalRole);
+        //         this.totalRole = totalRole;
+        //     })
+        //    },
            submitForm(){
                this.$refs.Roles.validate((valid)=>{
                    if(valid){
@@ -168,9 +165,6 @@
                })
            },
            submitForm1(id,role,roleDes){
-               console.log(id);
-               console.log(role);
-               console.log(roleDes);
                this.$refs.Roles1.validate((valid)=>{
                    if(valid){
                        this.$request.put("/update/amend1",{
@@ -196,7 +190,9 @@
            }
         },
         created(){
-           this.getDate();
+        //    this.getDate();
+           this.$store.dispatch("getRole")
+           console.log("store",this.$store);
         }
     }
 </script>

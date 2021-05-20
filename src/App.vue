@@ -31,5 +31,7 @@
 </script>
 
 <style>
-  
+  .el-table{
+    font-size: 12px;
+  }
 </style>

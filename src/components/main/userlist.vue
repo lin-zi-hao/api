@@ -6,6 +6,7 @@
             </el-input>
             <el-button type="primary" style="margin-left:30px" @click="dialogFormVisible = true">添加用户</el-button>
         </div>
+        <div>
         <el-table ref="singleTable" :data="tableData" highlight-current-row style="width: 100%;padding:0 10px 0 10px;">
             <el-table-column type="index" label="#">
             </el-table-column>
@@ -31,13 +32,13 @@
                     </el-button>
                 </template>
             </el-table-column>
-        </el-table>
-        <div class="block">
-            <el-pagination :page-sizes="[4, 6, 8, 10]" :page-size="30" style="padding:20px"
-                layout="total, sizes, prev, pager, next, jumper" :total="getData">
-            </el-pagination>
+                </el-table>
+                <div class="block">
+                    <el-pagination :page-sizes="[4, 6, 8, 10]" :page-size="size" style="padding:20px"
+                        layout="total, sizes, prev, pager, next, jumper" :total="total" @size-change="changePage" @current-change="changeC">
+                    </el-pagination>
+                </div>
         </div>
-
         <el-dialog title="添加用户名" :visible.sync="dialogFormVisible">
             <el-form :model="form" ref="ruleForm" :rules="rules" label-width="80px">
                 <el-form-item label="用户名" prop="username">
@@ -62,13 +63,12 @@
 </template>
 <script>
     export default {
+        inject:["reload"],
         data() {
             let checkPhone = (rule, value, callback) => {
-                if (!value) {
-                    return callback(new Error('请输入手机号'));
-                } else {
-                    const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
-                    if (reg.test(value)) {
+                    if(value) {
+                     const reg = /^1[3|4|5|7|8][0-9]\d{8}$/
+                      if (reg.test(value)) {
                         this.$request.get("/user/check/phone", {
                             params: {
                                 phone: value
@@ -76,7 +76,6 @@
                         }).then(({
                             data
                         }) => {
-                            console.log(data);
                             if (data.code === 400) {
                                 callback(new Error("手机号已存在"))
                             } else if (data.code === 200) {
@@ -88,6 +87,37 @@
                     }
                 }
             };
+            let checkEmail = (rule,value,callback)=>{
+                if(value){
+                    this.$request.get("/user/check/email",{
+                        params:{
+                            email:value
+                        }
+                    }).then(({data})=>{
+                        if(data.code===400){
+                            callback(new Error("邮箱已存在"));
+                        }else if(data.code===200){
+                            callback()
+                        }
+                    })
+                }
+            }
+
+            let checkUser = (rule,value,callback)=>{
+                if(value){
+                    this.$request.get("/user/check/user1",{
+                        params:{
+                            username:value
+                        }
+                    }).then(({data})=>{
+                        if(data.code===400){
+                            callback(new Error("用户名已存在"));
+                        }else if(data.code===200){
+                            callback()
+                        }
+                    })
+                }
+            }
             return {
                 tableData: [],
                 currentRow: null,
@@ -101,7 +131,12 @@
                     phone: "",
                 },
                 rules: {
-                    username: [{
+                    username: [
+                        {
+                        required: true,
+                        validator: checkUser,
+                        trigger: 'blur'
+                        },{
                             required: true,
                             message: '请输入用户名',
                             trigger: 'blur'
@@ -125,26 +160,35 @@
                             trigger: 'blur'
                         }
                     ],
-                    email: [{
-                        required: true,
-                        validator: '请输入邮箱',
-                        trigger: 'blur',
-                    }, {
+                    email: [
+                        {
+                            required: true,
+                            message: '请输入邮箱',
+                            trigger: 'blur'
+                        },
+                         {
                         type: 'email',
                         message: '请输入正确的邮箱地址',
                         trigger: 'blur'
+                    },
+                    {
+                        required: true,
+                        validator: checkEmail,
+                        trigger: 'blur'
                     }],
-                    phone: [{
+                    phone: [
+                        {
+                            required: true,
+                            message: '请输入手机号码',
+                            trigger: 'blur'
+                        },{
                         required: true,
                         validator: checkPhone,
                         trigger: 'blur'
                     }]
                 },
-            }
-        },
-        computed: {
-            getData() {
-                return this.tableData.length
+                size:4,
+                total:0
             }
         },
         methods: {
@@ -168,6 +212,7 @@
                                     type: "success"
                                 })
                             }
+                            this.reload()
                         })
                     } else {
                         console.log('error submit!!');
@@ -189,11 +234,22 @@
                             type: "success"
                         })
                     }
+                    this.reload();
                 })
             },
-        },
-        created() {
-            this.$request.get("/user/all").then(({
+            //当每页发生变化时就会触发该函数
+            changePage(size){
+            this.size = size
+            this.getDate(0,this.size);
+            },
+            //获取数据
+            getDate(i=0,size){
+                this.$request.get("/user/all1",{
+                    params:{
+                       skip:i*size,
+                       limit:size, 
+                    }
+                }).then(({
                 data
             }) => {
                 this.tableData = data.data.map((item, index) => {
@@ -201,7 +257,17 @@
                     item.value = `value${index+1}`;
                     return item
                 });
+                this.total=data.total
             })
+            },
+            //当页数发生变化时
+            changeC(i){
+                this.getDate(i-1,this.size);
+            }
+        },
+        created() {
+            this.getDate(0,this.size);
         }
     }
+
 </script>
