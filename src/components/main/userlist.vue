@@ -36,22 +36,21 @@
                     </el-tooltip>
                     <el-dialog title="分配角色" :visible="dialogTableVisible==row._id">
                         <el-form :model="form">
-                            <el-form-item label="当前的用户" :label-width="formLabelWidth">
-                               <span>梓昊</span>
+                            <el-form-item label="当前的用户：" :label-width="formLabelWidth">
+                               <span>{{row.username}}</span>
                             </el-form-item>
-                            <el-form-item label="当前的角色" :label-width="formLabelWidth">
-                               <span>猪王</span>
+                            <el-form-item label="当前的角色：" :label-width="formLabelWidth">
+                               <span>{{row.role}}</span>
                             </el-form-item>
                             <el-form-item label="活动区域" :label-width="formLabelWidth">
-                                <el-select v-model="form.region" placeholder="请选择活动区域">
-                                    <el-option label="主管" value="shanghai"></el-option>
-                                    <el-option label="测试角色" value="beijing"></el-option>
+                                <el-select v-model="form.region" placeholder="请选择活动区域"  @change="gRole">
+                                    <el-option v-for="(item,idx) in getR" :key="item+idx" :value="item.role"></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="dialogTableVisible = false">取 消</el-button>
-                            <el-button type="primary">确 定</el-button>
+                            <el-button type="primary" >确 定</el-button>
                         </div>
                     </el-dialog>
 
@@ -131,7 +130,6 @@
                     })
                 }
             }
-
             let checkUser = (rule,value,callback)=>{
                 if(value){
                     this.$request.get("/user/check/user1",{
@@ -220,6 +218,11 @@
                 total:0
             }
         },
+        computed:{
+            getR(){
+                return this.$store.state.role.role
+            }
+        },
         methods: {
             changeswitch() {
                 this.$message({
@@ -282,6 +285,7 @@
             this.size = size
             this.getDate(0,this.size);
             },
+            
             //获取数据
             getDate(i=0,size){
                 this.$request.get("/user/all1",{
@@ -292,8 +296,8 @@
                 }).then(({
                 data
             }) => {
+                console.log(data);
                 this.tableData = data.data.map((item, index) => {
-                    item.role = "超级管理员";
                     item.value = `value${index+1}`;
                     return item
                 });
@@ -303,10 +307,15 @@
             //当页数发生变化时
             changeC(i){
                 this.getDate(i-1,this.size);
+            },
+            gRole(r){
+                this.$store.dispatch("judge",r)
             }
         },
         created() {
             this.getDate(0,this.size);
+            this.$store.dispatch("getRole");
+            
         }
     }
 

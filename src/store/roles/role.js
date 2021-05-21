@@ -24,6 +24,9 @@ export default {
             })
           }
         })
+      },
+      judge(content,payload){
+        console.log(payload);
       }
     }
 }

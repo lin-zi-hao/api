@@ -6,7 +6,7 @@
         </el-table-column>
         <el-table-column prop="way" label="路径">
         </el-table-column>
-        <el-table-column prop="tag" label="标签" width="100"
+        <el-table-column prop="tag" label="权限等级" 
             filter-placement="bottom-end">
             <template slot-scope="scope">
                 <el-tag :type="scope.row.tag === '家' ? 'primary' : 'success'" disable-transitions>{{scope.row.tag}}
