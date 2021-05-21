@@ -20,7 +20,7 @@
             </el-table-column>
             <el-table-column property="state" label="状态">
                 <template v-slot:default="{row}">
-                    <el-switch v-model="row.value" @change="changeswitch">
+                    <el-switch v-model="row.flag" @change="changeswitch(row._id,$event)">
                     </el-switch>
                 </template>
             </el-table-column>
@@ -43,14 +43,14 @@
                                <span>{{row.role}}</span>
                             </el-form-item>
                             <el-form-item label="活动区域" :label-width="formLabelWidth">
-                                <el-select v-model="form.region" placeholder="请选择活动区域"  @change="gRole">
-                                    <el-option v-for="(item,idx) in getR" :key="item+idx" :value="item.role"></el-option>
+                                <el-select v-model="form.region" placeholder="请选择活动区域"  @change="gRole" clearable>
+                                    <el-option v-for="(item,idx) in getR" :key="item+idx"  :value="item.role" ></el-option>
                                 </el-select>
                             </el-form-item>
                         </el-form>
                         <div slot="footer" class="dialog-footer">
                             <el-button @click="dialogTableVisible = false">取 消</el-button>
-                            <el-button type="primary" >确 定</el-button>
+                            <el-button type="primary" @click="role1(row._id)">确 定</el-button>
                         </div>
                     </el-dialog>
 
@@ -224,11 +224,25 @@
             }
         },
         methods: {
-            changeswitch() {
-                this.$message({
-                    message: '更新用户状态成功',
-                    type: 'success'
-                });
+            //修改用户状态，是否可以登录
+            changeswitch(id,flag) {
+                console.log(flag);
+                this.$request.put("/user/changeF",{
+                    id,
+                    flag
+                }).then(({data})=>{
+                    if(data.code===200){
+                    this.$message({
+                        message: '更新用户状态成功',
+                        type: 'success'
+                    });
+                    }else if(data.code===400){
+                    this.$message({
+                        message: '更新用户状态失败',
+                        type: 'warning'
+                    });
+                    }
+                })  
             },
             submitForm() {
                 this.$refs.ruleForm.validate((valid) => {
@@ -279,7 +293,7 @@
                     message: '已取消删除'
                 });          
                 });
-            },
+            },  
             //当每页发生变化时就会触发该函数
             changePage(size){
             this.size = size
@@ -296,7 +310,6 @@
                 }).then(({
                 data
             }) => {
-                console.log(data);
                 this.tableData = data.data.map((item, index) => {
                     item.value = `value${index+1}`;
                     return item
@@ -309,7 +322,12 @@
                 this.getDate(i-1,this.size);
             },
             gRole(r){
-                this.$store.dispatch("judge",r)
+                localStorage.setItem("role",JSON.stringify(r));
+            },
+            role1(id){
+                let r = JSON.parse(localStorage.getItem("role"));
+                this.$store.dispatch("judge",{r,id})
+                this.reload()
             }
         },
         created() {
@@ -318,5 +336,4 @@
             
         }
     }
-
 </script>

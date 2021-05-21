@@ -26,6 +26,7 @@
 <script>
     export default {
         data() {
+           
             return {
                 // 登录校验
                 FormData: {
@@ -60,12 +61,33 @@
                 }
             }
         },
+        computed:{
+            allDa(){
+                return this.$store.state.role.allData
+            }
+        },
+        beforeRouteEnter (to, from, next) {
+            next()
+        },
+
         methods: {
             submitForm() {
                 this.$refs.ruleForm.validate((valid) => {
                     // valid表示表单是否验证通过
                     if (valid) {
-                        console.log("valid=", valid);
+                        //输入框的用户名和数组的username对比，匹配成功就返回当前匹配成功的数据
+                         let u = this.allDa.find(item=>{
+                            return item.username==this.FormData.username
+                        })
+                        //如果为状态为false的时候，代表用户没有登录权限
+                        if(!u.flag){
+                           this.$message({
+                               type:"warning",
+                               message:"用户没有权限登录"
+                           })
+                           return
+                        }
+                         //如果为状态为true的时候，代表用户没有登录权限
                         const {
                             username,
                             password
@@ -83,11 +105,12 @@
                                     type: "success"
                                 })
                                 localStorage.setItem("userInfo", JSON.stringify(data.data))
-                                this.$router.push("/main")
+                                this.$router.push("/main/welcome")
                             } else if (data.code === 401) {
                                 this.$message.error('登录失败');
                             }
                         })
+                        
                     } else {
                         console.log('error submit!!');
                         return false;
@@ -97,13 +120,19 @@
             resetting() {
                 this.FormData.username = "admin",
                 this.FormData.password = "123456"
+                console.log(this.allDa);
             }
         },
         created() {
-            console.log(this);
-            
+            this.$store.dispatch("getAll");
         }
     }
+
+    //首先改变数据库一个flag字段为boolean，
+    //然后在全局状态管理获取数据库的信息，并且写入state属性里面的数据
+    //用到数据的方法find
+    //然后在login进行判断，首先要让浏览器知道你输入的username和数据库里面的username对比，如果匹配成功就返回当前数据
+    //然后使用当前数据下的flag去判断是否可以登录，false不可以登录，true是可以登录
 </script>
 <style scoped>
     .from-login {

@@ -3,7 +3,6 @@ import Vue from "vue";
 import login from "../components/login.vue";
 import main from "../components/main.vue";
 
-
 // 引入main的子组件
 import userlist from "../components/main/userlist.vue";
 import rolelist from "../components/main/rolelist.vue";
@@ -23,7 +22,7 @@ const routes = [{
 }, {
   name: "login",
   path: "/login",
-  component: login
+  component: login,
 }, {
   name: "main",
   path: "/main",
@@ -31,7 +30,7 @@ const routes = [{
   children: [{
     name: "userlist",
     path: "userlist",
-    component: userlist
+    component: userlist,
   }, {
     name: "rolelist",
     path: "rolelist",
@@ -72,4 +71,11 @@ const router = new Router({
   mode: "history"
 })
 
+router.beforeEach=function(to,form,next){
+  //校验token登录状态
+
+
+  next()
+
+} 
 export default router

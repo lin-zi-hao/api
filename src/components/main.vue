@@ -109,8 +109,8 @@
         },
         methods: {
             signOut() {
+                // localStorage.removeItem("userInfo");
                 this.$router.push("/login");
-
             },
             isshow(){
                 this.isCollapse=!this.isCollapse;
