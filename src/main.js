@@ -17,4 +17,7 @@ new Vue({
   router,
   store,
   render: h => h(App),
+  // comments:{
+  //   to:()=> import("./components/btn/btn.vue") 
+  // }
 }).$mount('#app')

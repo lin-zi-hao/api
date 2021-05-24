@@ -4,7 +4,9 @@ export default {
     state:{
       role:[],
       //负责存储数据库user信息
-      allData:[]
+      allData:[],
+      //储存路由地址
+      router:[]
     },
     getters:{
       
@@ -21,6 +23,7 @@ export default {
     },
     //只能actions处理异步函数
     actions:{
+      //获取用户权限
      getRole(content,payload){
         request.get("/update/all").then(({data})=>{
           if(data.code===200){
@@ -33,6 +36,7 @@ export default {
           }
         })
       },
+      //修改用户状态
      judge(content,{r,id}){
        request.put("/user/change",{
         id,
@@ -57,6 +61,32 @@ export default {
        request.get("/user/all").then(({data})=>{
         content.commit("All",data.data)
        })
+     },
+     
+     //删除操作
+     remove(content,{url,id}){
+      request.delete(url, {
+        params: {
+            id,
+        }
+        }).then(({
+            data
+        }) => {
+        if (data.code === 200) {
+            Message({
+                message: "删除成功",
+                type: "success"
+            })
+        }
+        
+    })
+     },
+
+
+     getRouter(content,payload){
+      request.get("/router/all").then(({data})=>{
+        console.log(data);
+      })
      }
     }
 }

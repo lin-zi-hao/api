@@ -27,9 +27,26 @@
             <el-table-column property="operation" label="操作" width="200">
                 <template v-slot:default="{row}">
                     <el-tooltip class="item" effect="dark" content="编辑用户" placement="top">
-                        <el-button size="mini" type="primary"><i class="el-icon-edit"></i></el-button>
+                        <el-button size="mini" type="primary" @click="dia(row._id)" style="margin-right:10px"><i class="el-icon-edit"></i></el-button>
                     </el-tooltip>
 
+                    <el-dialog title="修改用户" :visible="dial==row._id">
+                        <el-form :model="form" :rules="rules">
+                            <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+                            <el-input  autocomplete="off"  :disabled="true" ></el-input>
+                            </el-form-item>
+                            <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+                                <el-input  autocomplete="off" v-model="form.email"></el-input>
+                            </el-form-item>
+                             <el-form-item label="手机" :label-width="formLabelWidth" prop="phone">
+                                <el-input  autocomplete="off" v-model="form.phone"></el-input>
+                            </el-form-item>
+                        </el-form>
+                        <div slot="footer" class="dialog-footer">
+                            <el-button @click="dial = false">取 消</el-button>
+                            <el-button type="primary" @click="updateUser(row._id)">确 定</el-button>
+                        </div>
+                    </el-dialog>
                     <el-tooltip class="item" effect="dark" content="更改用户权限" placement="top">
                         <el-button size="mini" type="warning" @click="dialogTableVisible=row._id" style="margin-right:10px"><i
                                 class="el-icon-setting"></i></el-button>
@@ -150,6 +167,7 @@
                 currentRow: null,
                 dialogTableVisible: false,
                 dialogFormVisible: false,
+                dial: false,
                 formLabelWidth: '120px',
                 form: {
                     username: "",
@@ -226,7 +244,6 @@
         methods: {
             //修改用户状态，是否可以登录
             changeswitch(id,flag) {
-                console.log(flag);
                 this.$request.put("/user/changeF",{
                     id,
                     flag
@@ -272,21 +289,8 @@
                 cancelButtonText: '取消',
                 type: 'warning'
                 }).then(() => {
-                    this.$request.delete("/user/remove", {
-                    params: {
-                        id,
-                    }
-                    }).then(({
-                        data
-                    }) => {
-                    if (data.code === 200) {
-                        this.$message({
-                            message: "删除成功",
-                            type: "success"
-                        })
-                    }
+                    this.$store.dispatch("remove",{url:"/user/remove",id});
                     this.reload();
-                })
                 }).catch(() => {
                 this.$message({
                     type: 'info',
@@ -328,12 +332,30 @@
                 let r = JSON.parse(localStorage.getItem("role"));
                 this.$store.dispatch("judge",{r,id})
                 this.reload()
+            },
+            dia(id){
+                this.dial = id
+                return this.dial
+            },
+            updateUser(id){
+                this.$request.put("/user/changeA",{
+                    id,
+                    email:this.form.email,
+                    phone:this.form.phone
+                }).then(({data})=>{
+                    if(data.code===200){
+                        this.$message({
+                            type:"success",
+                            message:"修改成功"
+                        })
+                         this.reload()
+                    }
+                })
             }
         },
         created() {
             this.getDate(0,this.size);
             this.$store.dispatch("getRole");
-            
         }
     }
 </script>

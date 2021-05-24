@@ -27,10 +27,14 @@ const routes = [{
   name: "main",
   path: "/main",
   component: main,
+  
   children: [{
     name: "userlist",
     path: "userlist",
     component: userlist,
+    meta:{
+      requiredAuth:true
+    },
   }, {
     name: "rolelist",
     path: "rolelist",
@@ -71,11 +75,8 @@ const router = new Router({
   mode: "history"
 })
 
-router.beforeEach=function(to,form,next){
-  //校验token登录状态
-
-
+router.beforeEach((to,form,next)=>{
+ 
   next()
-
-} 
+})
 export default router

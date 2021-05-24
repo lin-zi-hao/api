@@ -7,4 +7,13 @@ const request = axios.create({
     withCredentials: true
 })
 
+// request.get = function(url,data,config={}){
+//     return request(url,{
+//         params:{
+//             ...config,
+//             data
+//         }
+//     })
+// }
+
 export default request;

@@ -33,7 +33,17 @@
 </script>
 
 <style>
-  .el-table{
-    font-size: 12px;
-  }
+  body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    html {
+        height: 100%;
+    }
+
+    #app {
+        height: 100%;
+    }
 </style>

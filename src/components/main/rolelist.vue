@@ -105,24 +105,8 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                     }).then(() => {
-                        this.$request.delete("/update/remove",{
-                            params:{
-                                id
-                            }
-                        }).then(({data})=>{
-                            if(data.code===200){
-                                this.$message({
-                                type: 'success',
-                                message: '删除成功!'
-                            });
-                            this.reload()
-                            }else if(data.code===400){
-                                this.$message({
-                                type: "fail",
-                                message: '删除失败!'
-                            });
-                            }
-                        })
+                        this.$store.dispatch("remove",{url:"/update/remove",id});
+                    this.reload();
                     }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -131,12 +115,6 @@
                     });
                     console.log(this.totalRole1);
            },
-        //    getDate(){
-        //         this.$request.get("/update/all").then(({data:{data:totalRole}})=>{
-        //         console.log(totalRole);
-        //         this.totalRole = totalRole;
-        //     })
-        //    },
            submitForm(){
                this.$refs.Roles.validate((valid)=>{
                    if(valid){
@@ -190,9 +168,7 @@
            }
         },
         created(){
-        //    this.getDate();
            this.$store.dispatch("getRole")
-           console.log("store",this.$store);
         }
     }
 </script>

@@ -1,7 +1,7 @@
 <template>
-    <div>
-        <div style="display:flex;justify-content: center">
-            <el-form status-icon class="demo-ruleForm from-login" ref="ruleForm" :model="FormData" :rules="rules">
+    <div style="height:100%;background:#5dbe8a">
+        <div>
+            <el-form status-icon class="demo-ruleForm from-login" ref="ruleForm" :model="FormData" :rules="rules" style="position: absolute;bottom:0;top:0;left:0;right:0;margin:auto;">
                 <div class="block">
                     <el-avatar shape="circle" :size="80">
                         <img src="../assets/head.jpg" alt="">
@@ -26,7 +26,6 @@
 <script>
     export default {
         data() {
-           
             return {
                 // 登录校验
                 FormData: {
@@ -127,7 +126,6 @@
             this.$store.dispatch("getAll");
         }
     }
-
     //首先改变数据库一个flag字段为boolean，
     //然后在全局状态管理获取数据库的信息，并且写入state属性里面的数据
     //用到数据的方法find
@@ -140,9 +138,8 @@
         padding: 20px 50px 20px 50px;
         width: 350px;
         border-radius: 10px;
-        margin-top: 100px;
+        height: 280px;
     }
-
     .block {
         text-align: center;
     }

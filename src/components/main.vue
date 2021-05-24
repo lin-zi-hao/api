@@ -2,12 +2,12 @@
     <el-container style="height:100%">
         <el-aside width="200px" style="height:100%;background: #304156;">
             <div class="backstage">
-                <img src="../assets/logo1.png" alt="" class="logo">
+                <img src="../assets/logo1.png" alt="" class="logo" >
                 <span class="backstage1">后台管理系统</span>
             </div>
             <el-menu router default-active="1-4-1" class="el-menu-vertical-demo" background-color="#304156"
                 text-color="#fff" active-text-color="#ffd04b" style="border:none" v-for="item in sidebar"
-                :key="item.text" :collapse="isCollapse">
+                :key="item.text" >
                 <el-submenu index="1">
                     <template slot="title">
                         <i :class="item.icon"></i>
@@ -104,13 +104,16 @@
                     }
                 ],
                 baseUrl: "/main",
-                isCollapse: false
             }
         },
         methods: {
             signOut() {
-                // localStorage.removeItem("userInfo");
+                localStorage.removeItem("userInfo");
                 this.$router.push("/login");
+                this.$message({
+                    type:"success",
+                    message:"退出成功"
+                })
             },
             isshow(){
                 this.isCollapse=!this.isCollapse;
@@ -118,20 +121,8 @@
         },
     }
 </script>
-<style>
-    body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-    }
-
-    html {
-        height: 100%;
-    }
-
-    #app {
-        height: 100%;
-    }
+<style scoped>
+    
 
     .myaside {
         height: 100%;
@@ -157,5 +148,9 @@
         line-height: 60px;
     }
 
+    .el-table{
+    font-size: 12px;
+  }
+   
     
 </style>
